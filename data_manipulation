@@ -16,20 +16,44 @@ colnames(df)[24:34] <- paste0("rating_", 1:11)
 # Load necessary libraries
 library(ggplot2)
 library(tidyr)
+library(dplyr)
 
-# Assuming your data frame is named df
-# Reshape the data: convert columns rating_1 to rating_11 to long format
-df_long <- df %>%
-  pivot_longer(cols = starts_with("rating_"), # Columns rating_1 to rating_11
-               names_to = "Rating",          # Create a new column for the rating type
-               values_to = "Score")          # Create a new column for the scores
+# Create a named vector for custom labels
+custom_labels <- c(
+  rating_1 = "Overall satisfaction",
+  rating_2 = "Evelyna Wever-Croes",
+  rating_3 = "Geoffrey Wever",
+  rating_4 = "Ursell Arends",
+  rating_5 = "Xiomara Maduro",
+  rating_6 = "Rocco Tjon",
+  rating_7 = "Glenbert Croes",
+  rating_8 = "Dangui Oduber",
+  rating_9 = "Endy Croes",
+  rating_10 = "Ady Thijsen",
+  rating_11 = "Overall effectiveness"
+)
 
-# Create the violin plot
+# Calculate means and reorder the Rating factor in ascending order
+mean_order <- df_long %>%
+  group_by(Rating) %>%
+  summarise(mean_score = mean(Score, na.rm = TRUE)) %>%
+  arrange(mean_score) %>%
+  pull(Rating)
+
+# Reorder the Rating factor in the original dataframe
+df_long$Rating <- factor(df_long$Rating, levels = mean_order)
+
+# Create the violin plot with custom labels
 ggplot(df_long, aes(x = Rating, y = Score)) +
   geom_violin(trim = FALSE, fill = "lightblue") +   # Violin plot with no trimming, and custom color
   geom_jitter(width = 0.2, alpha = 0.3) +           # Add jitter to show individual data points
+  stat_summary(fun = "mean", geom = "point",        # Add points for the mean
+               color = "red", size = 3) +           # Customize color and size of mean points
+  coord_flip() +                                    # Flip the coordinates
   theme_minimal() +                                 # Use a minimal theme
-  labs(title = "Violin Plot of Ratings",            # Title for the plot
-       x = "Rating Type",                           # X-axis label
-       y = "Score")                                 # Y-axis label
+  labs(title = "Ratings",            # Title for the plot
+       x = "Rating Type",                           # X-axis label (flipped)
+       y = "Score") +                               # Y-axis label (flipped)
+  scale_x_discrete(labels = custom_labels)          # Use custom labels for x-axis
 ```
+
