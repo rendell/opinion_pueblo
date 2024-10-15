@@ -1,0 +1,35 @@
+---
+title: "Opinion di pueblo"
+output: html_notebook
+---
+
+```{r}
+Responses...Opinion.di.pueblo...15.October.2024 <- read.csv("C:/Users/Rendell CE/OneDrive - Cornerstone Economics/Lovely Data/Opinion di pueblo/Responses - Opinion di pueblo - 15 October 2024.csv", stringsAsFactors=TRUE)
+
+df<-Responses...Opinion.di.pueblo...15.October.2024
+
+colnames(df)[24:34] <- paste0("rating_", 1:11)
+
+```
+
+```{r}
+# Load necessary libraries
+library(ggplot2)
+library(tidyr)
+
+# Assuming your data frame is named df
+# Reshape the data: convert columns rating_1 to rating_11 to long format
+df_long <- df %>%
+  pivot_longer(cols = starts_with("rating_"), # Columns rating_1 to rating_11
+               names_to = "Rating",          # Create a new column for the rating type
+               values_to = "Score")          # Create a new column for the scores
+
+# Create the violin plot
+ggplot(df_long, aes(x = Rating, y = Score)) +
+  geom_violin(trim = FALSE, fill = "lightblue") +   # Violin plot with no trimming, and custom color
+  geom_jitter(width = 0.2, alpha = 0.3) +           # Add jitter to show individual data points
+  theme_minimal() +                                 # Use a minimal theme
+  labs(title = "Violin Plot of Ratings",            # Title for the plot
+       x = "Rating Type",                           # X-axis label
+       y = "Score")                                 # Y-axis label
+```
