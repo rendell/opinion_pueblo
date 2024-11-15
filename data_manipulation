@@ -7,12 +7,10 @@ output: html_notebook
 ```{r}
 # Load necessary libraries
 library(ggplot2)
-library(tidyr)
 library(dplyr)
-library(tidyverse)
+library(tidyr)
 library(readr)
 library(Rmisc)
-library(OpenStreetMap)
 library(sf)
 library(treemap)
 library(waffle)
@@ -20,9 +18,9 @@ library(ggmap)
 ```
 
 ```{r}
-Responses...Opinion.di.pueblo...16.October.2024 <- read.csv("C:/Users/Rendell CE/OneDrive - Cornerstone Economics/Lovely Data/Opinion di pueblo/Responses - Opinion di pueblo - 14 November 2024.csv", stringsAsFactors=TRUE)
+df <- read.csv("C:/Users/Rendell CE/OneDrive - Cornerstone Economics/Lovely Data/Opinion di pueblo/Responses - Opinion di pueblo - 14 November 2024.csv", stringsAsFactors=TRUE)
 
-# Rename specific columns if necessary
+# Rename specific columns
 colnames(df)[24:34] <- paste0("rating_", 1:11)
 colnames(df)[1] <- "Eligible"
 
@@ -38,9 +36,9 @@ df_filtered <- df_filtered %>%
   ungroup() %>%
   select(-response_count)
 
-# Reshape the data for ratings (if necessary)
+# Reshape the data for ratings
 df_reshape <- df_filtered %>%
-  pivot_longer(cols = starts_with("rating_"), 
+  tidyr::pivot_longer(cols = starts_with("rating_"), 
                names_to = "Rating", 
                values_to = "Score")
 
