@@ -26,13 +26,13 @@ colnames(df)[1] <- "Eligible"
 
 # Filter out rows where 'Eligible' is "No"
 df_filtered <- df %>%
-  filter(Eligible != "No")
+  dplyr::filter(Eligible != "No")
 
 # Group and filter based on IP address response limits
 df_filtered <- df_filtered %>%
   group_by(IP.Address) %>%
   dplyr::mutate(response_count = dplyr::row_number()) %>%
-  filter(response_count <= 3) %>%
+  dplyr::filter(response_count <= 3) %>%
   ungroup() %>%
   select(-response_count)
 
@@ -44,7 +44,7 @@ df_reshape <- df_filtered %>%
 
 # Filter out specific ratings if needed
 df_reshape <- df_reshape %>%
-  filter(!(Rating %in% c("rating_1", "rating_11")))
+  dplyr::filter(!(Rating %in% c("rating_1", "rating_11")))
 
 # Create a named vector for custom labels
 custom_labels <- c(
@@ -62,8 +62,8 @@ custom_labels <- c(
 # Calculate means and reorder the Rating factor
 mean_order <- df_reshape %>%
   group_by(Rating) %>%
-  summarise(mean_score = mean(Score, na.rm = TRUE)) %>%
-  arrange(mean_score) %>%
+  dplyr::summarise(mean_score = mean(Score, na.rm = TRUE)) %>%
+  dplyr::arrange(mean_score) %>%
   pull(Rating)
 
 # Reorder the Rating factor in the filtered dataframe
@@ -102,12 +102,12 @@ ggplot(df_reshape, aes(x = Rating, y = Score)) +
 # Calculate the mean scores for each rating and round to one decimal place
 rating_summary <- df_reshape %>%
   group_by(Rating) %>%
-  summarise(Mean_Score = round(mean(Score, na.rm = TRUE), 1)) %>%
-  arrange(Mean_Score)
+  dplyr::summarise(Mean_Score = round(mean(Score, na.rm = TRUE), 1)) %>%
+  dplyr::arrange(Mean_Score)
 
 # Replace the Rating names with custom labels
 rating_summary <- rating_summary %>%
-  mutate(Rating = custom_labels[as.character(Rating)])
+  dplyr::mutate(Rating = custom_labels[as.character(Rating)])
 
 # Display the table
 print(rating_summary)
@@ -117,24 +117,24 @@ print(rating_summary)
 
 # Convert 'What.is.your.age.' to numeric and remove NA values
 df_filtered <- df_filtered %>%
-  mutate(What.is.your.age. = as.numeric(as.character(What.is.your.age.))) %>%
-  filter(!is.na(What.is.your.age.))
+  dplyr::mutate(What.is.your.age. = as.numeric(as.character(What.is.your.age.))) %>%
+  dplyr::filter(!is.na(What.is.your.age.))
 
 # Filter out individuals below 18 years of age
 df_filtered <- df_filtered %>%
-  filter(What.is.your.age. >= 18)
+  dplyr::filter(What.is.your.age. >= 18)
 
 # Create bins for age ranges (e.g., intervals of 5 years), starting at 18
 df_filtered <- df_filtered %>%
-  mutate(age_bins = cut(What.is.your.age., 
+ dplyr::mutate(age_bins = cut(What.is.your.age., 
                         breaks = seq(18, ceiling(max(What.is.your.age., na.rm = TRUE)) + 5, by = 5), 
                         right = FALSE))
 
 # Calculate the count and percentage for each bin
 age_distribution <- df_filtered %>%
   group_by(age_bins) %>%
-  summarise(Count = n()) %>%
-  mutate(Percentage = round((Count / sum(Count)) * 100, 1))
+  dplyr::summarise(Count = n()) %>%
+  dplyr::mutate(Percentage = round((Count / sum(Count)) * 100, 1))
 
 # Display the table
 print(age_distribution)
@@ -153,8 +153,8 @@ ggplot(df_filtered, aes(x = What.is.your.age.)) +
 # Calculate gender distribution
 gender_distribution <- df_filtered %>%
   group_by(What.is.your.gender) %>%
-  summarise(Count = n()) %>%
-  mutate(Percentage = round((Count / sum(Count)) * 100, 1))
+  dplyr::summarise(Count = n()) %>%
+  dplyr::mutate(Percentage = round((Count / sum(Count)) * 100, 1))
 
 # Display the table
 print(gender_distribution)
@@ -177,12 +177,12 @@ ggplot(gender_distribution, aes(x = "", y = Count, fill = What.is.your.gender)) 
 # Calculate the mean scores for each rating, round to one decimal place, and sort in descending order
 rating_summary <- df_reshape %>%
   group_by(Rating) %>%
-  summarise(Mean_Score = round(mean(Score, na.rm = TRUE), 1)) %>%
-  arrange(desc(Mean_Score))
+  dplyr::summarise(Mean_Score = round(mean(Score, na.rm = TRUE), 1)) %>%
+  dplyr::arrange(desc(Mean_Score))
 
 # Replace the Rating names with custom labels
 rating_summary <- rating_summary %>%
-  mutate(Rating = custom_labels[as.character(Rating)])
+  dplyr::mutate(Rating = custom_labels[as.character(Rating)])
 
 # Display the table
 print(rating_summary)
@@ -190,8 +190,8 @@ print(rating_summary)
 ```{r}
 # Calculate the percentage share of responses
 vote_likelihood_table <- df_filtered %>%
-  count(How.likely.are.you.to.vote.in.the.upcoming.election.) %>%
-  mutate(Percentage = round(n / sum(n) * 100, 1))
+  dplyr::count(How.likely.are.you.to.vote.in.the.upcoming.election.) %>%
+  dplyr::mutate(Percentage = round(n / sum(n) * 100, 1))
 
 # Rename columns for clarity
 colnames(vote_likelihood_table) <- c("Likelihood", "Count", "Percentage")
@@ -202,8 +202,8 @@ print(vote_likelihood_table)
 ```{r}
 # Calculate the percentage share of responses
 policy_informed_table <- df_filtered %>%
-  count(How.informed.do.you.feel.about.the.proposed.policies.of.the.leading.political.parties.) %>%
-  mutate(Percentage = round(n / sum(n) * 100, 1))
+  dplyr::count(How.informed.do.you.feel.about.the.proposed.policies.of.the.leading.political.parties.) %>%
+  dplyr::mutate(Percentage = round(n / sum(n) * 100, 1))
 
 # Rename columns for clarity
 colnames(policy_informed_table) <- c("Response", "Count", "Percentage")
@@ -235,13 +235,13 @@ columns_to_analyze <- c(
 # Create a summary table for all columns and merge into one table
 summary_table <- lapply(names(columns_to_analyze), function(col) {
   df_filtered %>%
-    count(!!sym(col)) %>%
-    mutate(
+    dplyr::count(!!sym(col)) %>%
+    dplyr::mutate(
       Percentage = round(n / sum(n) * 100, 1),
       Description = columns_to_analyze[col]
     ) %>%
-    select(Description, !!sym(col), Percentage) %>%
-    rename(Response = !!sym(col))
+    dplyr::select(Description, !!sym(col), Percentage) %>%
+    dplyr::rename(Response = !!sym(col))
 }) %>%
   bind_rows()
 
@@ -371,3 +371,4 @@ aruba11 <- get_stamenmap(bbox = c(left = -70.175131,
                            zoom = 12, 
                            maptype = "watercolor")
 ```
+
