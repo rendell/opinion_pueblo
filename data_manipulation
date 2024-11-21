@@ -18,7 +18,7 @@ library(ggmap)
 ```
 
 ```{r}
-df <- read.csv("C:/Users/Rendell CE/OneDrive - Cornerstone Economics/Lovely Data/Opinion di pueblo/Responses - Opinion di pueblo - 14 November 2024.csv", stringsAsFactors=TRUE)
+df <- read.csv("C:/Users/Rendell CE/OneDrive - Cornerstone Economics/Lovely Data/Opinion di pueblo/Responses - Opinion di pueblo - 20 November 2024.csv", stringsAsFactors=TRUE)
 
 # Rename specific columns
 colnames(df)[24:34] <- paste0("rating_", 1:11)
@@ -250,6 +250,41 @@ print(summary_table)
 ```
 
 
+
+```{r}
+GAC_Straatnamen <- read.csv("C:/Users/Rendell CE/OneDrive - Cornerstone Economics/Lovely Data/Opinion di pueblo/GAC_Straatnamen.csv")
+
+combined_data <- df_filtered %>%
+  left_join(GAC_Straatnamen, by = c("On.which.street.do.you.reside." = "Straatnaam"))
+
+
+# Define the mapping of numeric codes to labels
+region_labels <- c(
+  "1" = "Noord/Tanki Leendert",
+  "2" = "Oranjestad West",
+  "3" = "Oranjestad Oost",
+  "4" = "Paradera",
+  "5" = "Santa Cruz",
+  "6" = "Savaneta",
+  "7" = "San Nicolas",
+  "8" = "San Nicolas"
+)
+
+# Replace numeric codes with labels in the data
+combined_data <- combined_data %>%
+  dplyr::mutate(Regio = factor(Regio, levels = names(region_labels), labels = region_labels))
+
+# Exclude NA values and calculate percentage share for each region
+region_summary <- combined_data %>%
+  dplyr::filter(!is.na(Regio)) %>%  # Exclude rows with NA in Regio
+  dplyr::group_by(Regio) %>%
+  dplyr::summarise(Count = n()) %>%
+  dplyr::mutate(Percentage = round((Count / sum(Count)) * 100, 1))  # Limit percentage to 1 decimal place
+
+# Display the summary table
+region_summary
+```
+
 # Shapefile
 ```{r, eval=FALSE, include=FALSE}
 temp_shapefile <- tempfile()
@@ -270,11 +305,6 @@ coord_sf() + theme(panel.background = element_blank(),
                    )
 ```
 
-
-```{r,eval=FALSE}
-df_filtered          <- left_join(df_filtered,`GAC.(2)`,
-                                    by=c("On.which.street.do.you.reside."="Straatnaam"))
-```
 
 #Actual mapping
 
