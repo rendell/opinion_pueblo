@@ -18,7 +18,7 @@ library(ggmap)
 ```
 
 ```{r}
-df <- read.csv("C:/Users/Rendell CE/OneDrive - Cornerstone Economics/Lovely Data/Opinion di pueblo/Responses - Opinion di pueblo - 20 November 2024.csv", stringsAsFactors=TRUE)
+df <- read.csv("C:/Users/Rendell CE/OneDrive - Cornerstone Economics/Lovely Data/Opinion di pueblo/Responses - Opinion di pueblo - 23 November 2024.csv", stringsAsFactors=TRUE)
 
 # Rename specific columns
 colnames(df)[24:34] <- paste0("rating_", 1:11)
