@@ -386,6 +386,102 @@ print(ranked_summary)
 ```
 
 
+```{r}
+# List of variables to analyze
+variables_to_analyze <- c(
+  "What.would.encourage.you.to.participate.more.actively.in.elections..e.g...voting..campaigning..etc......Better.access.to.information",
+  "What.would.encourage.you.to.participate.more.actively.in.elections..e.g...voting..campaigning..etc......More.engaging.candidates",
+  "What.would.encourage.you.to.participate.more.actively.in.elections..e.g...voting..campaigning..etc......Improved.voting.processes",
+  "What.would.encourage.you.to.participate.more.actively.in.elections..e.g...voting..campaigning..etc......Seeing.direct.benefits.or.improvements.from.previous.elections..e.g...fulfilled.campaign.promises..",
+  "What.would.encourage.you.to.participate.more.actively.in.elections..e.g...voting..campaigning..etc......Incentives.for.participation..e.g...tax.breaks..voting.days.off.work..",
+  "What.would.encourage.you.to.participate.more.actively.in.elections..e.g...voting..campaigning..etc......Better.voter.education.and.awareness.of.the.importance.of.elections",
+  "What.would.encourage.you.to.participate.more.actively.in.elections..e.g...voting..campaigning..etc......More.transparency.about.campaign.funding.and.lobbying",
+  "What.would.encourage.you.to.participate.more.actively.in.elections..e.g...voting..campaigning..etc......Feeling.that.my.vote.can.actually.make.a.difference",
+  "What.would.encourage.you.to.participate.more.actively.in.elections..e.g...voting..campaigning..etc......Change.in.the.election.system.or.process",
+  "What.would.encourage.you.to.participate.more.actively.in.elections..e.g...voting..campaigning..etc......Other...Other"
+)
+
+# Total respondents in the dataset
+total_respondents <- nrow(df_filtered)
+
+# Summarize responses with accurate percentages
+summary_table <- lapply(variables_to_analyze, function(var) {
+  df_filtered %>%
+    dplyr::filter(!is.na(.data[[var]]) & .data[[var]] != "") %>%  # Exclude NA and blank responses
+    dplyr::count(Response = .data[[var]], name = "Count") %>%  # Count each response
+    dplyr::mutate(
+      Variable = var,
+      Total_Respondents = total_respondents,  # Total respondents
+      Percentage = round(Count / total_respondents * 100, 1)  # Calculate percentage of total respondents
+    ) %>%
+    dplyr::select(Variable, Response, Count, Percentage)  # Arrange columns
+}) %>%
+  bind_rows()
+
+# Rank the responses from most frequent to least frequent across all variables
+ranked_summary <- summary_table %>%
+  arrange(desc(Percentage), Variable)
+
+# View the ranked table
+print(ranked_summary)
+```
+
+```{r}
+# List of variables to analyze
+variables_to_analyze <- c(
+  "What.are.the.top.issues.you.believe.should.be.prioritized.in.the.political.debate....Environment.and.Climate.Change",
+  "What.are.the.top.issues.you.believe.should.be.prioritized.in.the.political.debate....Economy.and.Job.Creation",
+  "What.are.the.top.issues.you.believe.should.be.prioritized.in.the.political.debate....Healthcare.Access.and.Quality",
+  "What.are.the.top.issues.you.believe.should.be.prioritized.in.the.political.debate....Education.Quality.and.Accessibility",
+  "What.are.the.top.issues.you.believe.should.be.prioritized.in.the.political.debate....Social.Inequality.and.Inclusion",
+  "What.are.the.top.issues.you.believe.should.be.prioritized.in.the.political.debate....Public.Safety.and.Crime.Prevention",
+  "What.are.the.top.issues.you.believe.should.be.prioritized.in.the.political.debate....Infrastructure.Development",
+  "What.are.the.top.issues.you.believe.should.be.prioritized.in.the.political.debate....Tourism.and.Economic.Diversification",
+  "What.are.the.top.issues.you.believe.should.be.prioritized.in.the.political.debate....Transportation.and.Mobility",
+  "What.are.the.top.issues.you.believe.should.be.prioritized.in.the.political.debate....Youth.Engagement.and.Opportunities",
+  "What.are.the.top.issues.you.believe.should.be.prioritized.in.the.political.debate....Sustainable.Energy.Solutions",
+  "What.are.the.top.issues.you.believe.should.be.prioritized.in.the.political.debate....Corruption.and.Government.Accountability",
+  "What.are.the.top.issues.you.believe.should.be.prioritized.in.the.political.debate....Mental.Health.Services",
+  "What.are.the.top.issues.you.believe.should.be.prioritized.in.the.political.debate....Disability.Rights.and.Accessibility",
+  "What.are.the.top.issues.you.believe.should.be.prioritized.in.the.political.debate....Food.Security.and.Agriculture",
+  "What.are.the.top.issues.you.believe.should.be.prioritized.in.the.political.debate....Cultural.Heritage.and.Arts.Funding",
+  "What.are.the.top.issues.you.believe.should.be.prioritized.in.the.political.debate....Human.Rights.and.Gender.Equality",
+  "What.are.the.top.issues.you.believe.should.be.prioritized.in.the.political.debate....Senior.Citizen.Welfare.and.Support",
+  "What.are.the.top.issues.you.believe.should.be.prioritized.in.the.political.debate....Digital.Transformation.and.Technology.Access",
+  "What.are.the.top.issues.you.believe.should.be.prioritized.in.the.political.debate....Housing.Affordability",
+  "What.are.the.top.issues.you.believe.should.be.prioritized.in.the.political.debate....LGBTQ..Rights.and.Concerns",
+  "What.are.the.top.issues.you.believe.should.be.prioritized.in.the.political.debate....Other...Other"
+)
+
+# Total respondents in the dataset
+total_respondents <- nrow(df_filtered)
+
+# Summarize responses with accurate percentages
+summary_table <- lapply(variables_to_analyze, function(var) {
+  df_filtered %>%
+    dplyr::filter(!is.na(.data[[var]]) & .data[[var]] != "") %>%  # Exclude NA and blank responses
+    dplyr::count(Response = .data[[var]], name = "Count") %>%  # Count each response
+    dplyr::mutate(
+      Variable = var,
+      Total_Respondents = total_respondents,  # Total respondents
+      Percentage = round(Count / total_respondents * 100, 1)  # Calculate percentage of total respondents
+    ) %>%
+    dplyr::select(Variable, Response, Count, Percentage)  # Arrange columns
+}) %>%
+  bind_rows()
+
+# Rank the responses from most frequent to least frequent across all variables
+ranked_summary <- summary_table %>%
+  arrange(desc(Percentage), Variable)
+
+# View the ranked table
+print(ranked_summary)
+```
+
+
+
+
+
 
 
 ```{r}
