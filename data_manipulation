@@ -243,11 +243,148 @@ summary_table <- lapply(names(columns_to_analyze), function(col) {
     dplyr::select(Description, !!sym(col), Percentage) %>%
     dplyr::rename(Response = !!sym(col))
 }) %>%
-  bind_rows()
+  bind_rows() %>%
+  # Filter out rows with blank responses
+  dplyr::filter(Response != "") %>%
+  # Arrange by percentage in descending order
+  dplyr::arrange(desc(Percentage))
 
 # Display the compressed summary table
 print(summary_table)
 ```
+
+```{r}
+# Calculate the percentage table for the question and rank by percentage
+motivation_table <- df_filtered %>%
+  dplyr::filter(!is.na(What.is.your.primary.motivation.for.voting.in.elections.)) %>%
+  dplyr::count(What.is.your.primary.motivation.for.voting.in.elections., name = "Count") %>%
+  dplyr::mutate(Percentage = round(Count / sum(Count) * 100, 1)) %>%
+  dplyr::rename(Response = What.is.your.primary.motivation.for.voting.in.elections.) %>%
+  dplyr::arrange(desc(Percentage)) # Rank from largest to smallest
+
+# Print the ranked table
+print(motivation_table)
+
+# Display the ranked table with percentages
+library(knitr)
+library(kableExtra)
+
+motivation_table %>%
+  kbl(caption = "Primary Motivation for Voting in Elections (Ranked)") %>%
+  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+```{r}
+# Calculate percentages for "Are.you.planning.to.vote.for.the.same.party.as.you.did.last.time."
+vote_same_party_summary <- df_filtered %>%
+  dplyr::count(Are.you.planning.to.vote.for.the.same.party.as.you.did.last.time.) %>%
+  dplyr::mutate(Percentage = round(n / sum(n) * 100, 1)) %>%
+  dplyr::rename(Response = Are.you.planning.to.vote.for.the.same.party.as.you.did.last.time.) %>%
+  arrange(desc(Percentage))
+
+# Display the summary table
+print(vote_same_party_summary)
+```
+
+
+```{r}
+# Calculate the percentage table for the question and rank by percentage
+motivation_table <- df_filtered %>%
+  dplyr::filter(!is.na(What.is.your.biggest.concern.about.the.upcoming.election.)) %>%
+  dplyr::count(What.is.your.biggest.concern.about.the.upcoming.election., name = "Count") %>%
+  dplyr::mutate(Percentage = round(Count / sum(Count) * 100, 1)) %>%
+  dplyr::rename(Response = What.is.your.biggest.concern.about.the.upcoming.election.) %>%
+  dplyr::arrange(desc(Percentage)) # Rank from largest to smallest
+
+# Print the ranked table
+print(motivation_table)
+
+# Display the ranked table with percentages
+library(knitr)
+library(kableExtra)
+
+motivation_table %>%
+  kbl(caption = "Bigges concern about the upcoming election (Ranked)") %>%
+  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+
+```{r}
+# List of variables to analyze
+variables_to_analyze <- c(
+  "What.factors.are.most.important.to.you.when.choosing.a.candidate...Select.up.to.3.....Policy.positions",
+  "What.factors.are.most.important.to.you.when.choosing.a.candidate...Select.up.to.3.....Experience.and.qualifications",
+  "What.factors.are.most.important.to.you.when.choosing.a.candidate...Select.up.to.3.....Personal.integrity",
+  "What.factors.are.most.important.to.you.when.choosing.a.candidate...Select.up.to.3.....Community.involvement",
+  "What.factors.are.most.important.to.you.when.choosing.a.candidate...Select.up.to.3.....Party.affiliation",
+  "What.factors.are.most.important.to.you.when.choosing.a.candidate...Select.up.to.3.....Charisma.and.communication.skills",
+  "What.factors.are.most.important.to.you.when.choosing.a.candidate...Select.up.to.3.....Popularity",
+  "What.factors.are.most.important.to.you.when.choosing.a.candidate...Select.up.to.3.....In.my.personal.network"
+)
+
+# Total respondents in the dataset
+total_respondents <- nrow(df_filtered)
+
+# Summarize responses with accurate percentages
+summary_table <- lapply(variables_to_analyze, function(var) {
+  df_filtered %>%
+    dplyr::filter(!is.na(.data[[var]]) & .data[[var]] != "") %>%  # Exclude NA and blank responses
+    dplyr::count(Response = .data[[var]], name = "Count") %>%  # Count each response
+    dplyr::mutate(
+      Variable = var,
+      Total_Respondents = total_respondents,  # Total respondents
+      Percentage = round(Count / total_respondents * 100, 1)  # Calculate percentage of total respondents
+    ) %>%
+    dplyr::select(Variable, Response, Count, Percentage)  # Arrange columns
+}) %>%
+  bind_rows()
+
+# Rank the responses from most frequent to least frequent across all variables
+ranked_summary <- summary_table %>%
+  arrange(desc(Percentage), Variable)
+
+# View the ranked table
+print(ranked_summary)
+```
+
+```{r}
+# List of variables to analyze
+variables_to_analyze <- c(
+  "How.do.you.typically.gather.information.about.the.candidates.and.their.policies.....Social.media",
+  "How.do.you.typically.gather.information.about.the.candidates.and.their.policies.....News.outlets",
+  "How.do.you.typically.gather.information.about.the.candidates.and.their.policies.....Community.events",
+  "How.do.you.typically.gather.information.about.the.candidates.and.their.policies.....Word.of.mouth",
+  "How.do.you.typically.gather.information.about.the.candidates.and.their.policies.....Official.party.publications",
+  "How.do.you.typically.gather.information.about.the.candidates.and.their.policies.....Political.debate",
+  "How.do.you.typically.gather.information.about.the.candidates.and.their.policies.....Political.party.website",
+  "How.do.you.typically.gather.information.about.the.candidates.and.their.policies.....Own.research"
+)
+
+# Total respondents in the dataset
+total_respondents <- nrow(df_filtered)
+
+# Summarize responses with accurate percentages
+summary_table <- lapply(variables_to_analyze, function(var) {
+  df_filtered %>%
+    dplyr::filter(!is.na(.data[[var]]) & .data[[var]] != "") %>%  # Exclude NA and blank responses
+    dplyr::count(Response = .data[[var]], name = "Count") %>%  # Count each response
+    dplyr::mutate(
+      Variable = var,
+      Total_Respondents = total_respondents,  # Total respondents
+      Percentage = round(Count / total_respondents * 100, 1)  # Calculate percentage of total respondents
+    ) %>%
+    dplyr::select(Variable, Response, Count, Percentage)  # Arrange columns
+}) %>%
+  bind_rows()
+
+# Rank the responses from most frequent to least frequent across all variables
+ranked_summary <- summary_table %>%
+  arrange(desc(Percentage), Variable)
+
+# View the ranked table
+print(ranked_summary)
+```
+
 
 
 
@@ -401,4 +538,3 @@ aruba11 <- get_stamenmap(bbox = c(left = -70.175131,
                            zoom = 12, 
                            maptype = "watercolor")
 ```
-
